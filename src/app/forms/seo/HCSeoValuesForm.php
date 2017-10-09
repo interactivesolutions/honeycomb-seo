@@ -35,7 +35,7 @@ class HCSeoValuesForm
                     "required"        => 1,
                     "requiredVisible" => 1,
                 ], [
-                    "type"            => "singleLine",
+                    "type"            => "textArea",
                     "fieldID"         => "content",
                     "label"           => trans("HCSeo::seo_values.content"),
                     "required"        => 0,
