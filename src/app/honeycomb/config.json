@@ -1,21 +1,40 @@
 {
-    "general":
-    {
+    "general": {
         "serviceProviderNameSpace": "HCSeo"
     },
-    "formData":
-    [
+    "formData": {
+        "seo": "interactivesolutions\\honeycombseo\\app\\forms\\HCSeoForm"
+    },
+    "adminMenu": [
+        {
+            "route": "admin.routes.seo.index",
+            "translation": "HCSeo::seo.page_title",
+            "icon": "fa-circle-o",
+            "aclPermission": "interactivesolutions_honeycomb_seo_routes_seo_list",
+            "priority": 10
+        }
     ],
-    "adminMenu":
-    [
-    ],
-    "acl":
-    {
-        "permissions" :
-        [
+    "acl": {
+        "permissions": [
+            {
+                "name": "admin.routes.seo",
+                "controller": "interactivesolutions\\honeycombseo\\app\\http\\controllers\\HCSeoController",
+                "actions": [
+                    "interactivesolutions_honeycomb_seo_routes_seo_list",
+                    "interactivesolutions_honeycomb_seo_routes_seo_create",
+                    "interactivesolutions_honeycomb_seo_routes_seo_update",
+                    "interactivesolutions_honeycomb_seo_routes_seo_delete",
+                    "interactivesolutions_honeycomb_seo_routes_seo_force_delete"
+                ]
+            }
         ],
-        "rolesActions" :
-        [
-        ]
+        "rolesActions": {
+            "project-admin": [
+                "interactivesolutions_honeycomb_seo_routes_seo_list",
+                "interactivesolutions_honeycomb_seo_routes_seo_create",
+                "interactivesolutions_honeycomb_seo_routes_seo_update",
+                "interactivesolutions_honeycomb_seo_routes_seo_delete"
+            ]
+        }
     }
 }
