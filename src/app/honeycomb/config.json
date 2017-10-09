@@ -3,7 +3,8 @@
         "serviceProviderNameSpace": "HCSeo"
     },
     "formData": {
-        "seo": "interactivesolutions\\honeycombseo\\app\\forms\\HCSeoForm"
+        "seo": "interactivesolutions\\honeycombseo\\app\\forms\\HCSeoForm",
+        "seo-values": "interactivesolutions\\honeycombseo\\app\\forms\\seo\\HCSeoValuesForm"
     },
     "adminMenu": [
         {
@@ -26,6 +27,17 @@
                     "interactivesolutions_honeycomb_seo_routes_seo_delete",
                     "interactivesolutions_honeycomb_seo_routes_seo_force_delete"
                 ]
+            },
+            {
+                "name": "admin.routes.seo.values",
+                "controller": "interactivesolutions\\honeycombseo\\app\\http\\controllers\\seo\\HCSeoValuesController",
+                "actions": [
+                    "interactivesolutions_honeycomb_seo_routes_seo_values_list",
+                    "interactivesolutions_honeycomb_seo_routes_seo_values_create",
+                    "interactivesolutions_honeycomb_seo_routes_seo_values_update",
+                    "interactivesolutions_honeycomb_seo_routes_seo_values_delete",
+                    "interactivesolutions_honeycomb_seo_routes_seo_values_force_delete"
+                ]
             }
         ],
         "rolesActions": {
@@ -33,7 +45,11 @@
                 "interactivesolutions_honeycomb_seo_routes_seo_list",
                 "interactivesolutions_honeycomb_seo_routes_seo_create",
                 "interactivesolutions_honeycomb_seo_routes_seo_update",
-                "interactivesolutions_honeycomb_seo_routes_seo_delete"
+                "interactivesolutions_honeycomb_seo_routes_seo_delete",
+                "interactivesolutions_honeycomb_seo_routes_seo_values_list",
+                "interactivesolutions_honeycomb_seo_routes_seo_values_create",
+                "interactivesolutions_honeycomb_seo_routes_seo_values_update",
+                "interactivesolutions_honeycomb_seo_routes_seo_values_delete"
             ]
         }
     }

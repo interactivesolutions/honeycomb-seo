@@ -1,13 +1,14 @@
 <?php
 
-namespace interactivesolutions\honeycombseo\app\http\controllers;
+namespace interactivesolutions\honeycombseo\app\http\controllers\seo;
 
 use Illuminate\Database\Eloquent\Builder;
 use interactivesolutions\honeycombcore\http\controllers\HCBaseController;
 use interactivesolutions\honeycombseo\app\models\HCSeo;
-use interactivesolutions\honeycombseo\app\validators\HCSeoValidator;
+use interactivesolutions\honeycombseo\app\models\seo\HCSeoValues;
+use interactivesolutions\honeycombseo\app\validators\seo\HCSeoValuesValidator;
 
-class HCSeoController extends HCBaseController
+class HCSeoValuesController extends HCBaseController
 {
 
     //TODO recordsPerPage setting
@@ -15,28 +16,31 @@ class HCSeoController extends HCBaseController
     /**
      * Returning configured admin view
      *
+     * @param $uuid
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function adminIndex()
+    public function adminIndex($uuid = null)
     {
+        $record = HCSeo::findOrFail($uuid);
+
         $config = [
-            'title'       => trans('HCSeo::seo.page_title'),
-            'listURL'     => route('admin.api.routes.seo'),
-            'newFormUrl'  => route('admin.api.form-manager', ['seo-new']),
-            'editFormUrl' => route('admin.api.form-manager', ['seo-edit']),
+            'title'       => trans('HCSeo::seo_values.page_title') . " '{$record->path}'",
+            'listURL'     => route('admin.api.routes.seo.{_id}.values', $uuid),
+            'newFormUrl'  => route('admin.api.form-manager', ['seo-values-new']) . '?record_id=' . $uuid,
+            'editFormUrl' => route('admin.api.form-manager', ['seo-values-edit']) . '?record_id=' . $uuid,
             'imagesUrl'   => route('resource.get', ['/']),
             'headers'     => $this->getAdminListHeader(),
         ];
 
-        if( auth()->user()->can('interactivesolutions_honeycomb_seo_routes_seo_create') )
+        if( auth()->user()->can('interactivesolutions_honeycomb_seo_routes_seo_values_create') )
             $config['actions'][] = 'new';
 
-        if( auth()->user()->can('interactivesolutions_honeycomb_seo_routes_seo_update') ) {
+        if( auth()->user()->can('interactivesolutions_honeycomb_seo_routes_seo_values_update') ) {
             $config['actions'][] = 'update';
             $config['actions'][] = 'restore';
         }
 
-        if( auth()->user()->can('interactivesolutions_honeycomb_seo_routes_seo_delete') )
+        if( auth()->user()->can('interactivesolutions_honeycomb_seo_routes_seo_values_delete') )
             $config['actions'][] = 'delete';
 
         $config['actions'][] = 'search';
@@ -53,13 +57,13 @@ class HCSeoController extends HCBaseController
     public function getAdminListHeader()
     {
         return [
-            'path' => [
+            'name'    => [
                 "type"  => "text",
-                "label" => trans('HCSeo::seo.path'),
+                "label" => trans('HCSeo::seo_values.name'),
             ],
-            'values_url' => [
-                "type"  => "external-button",
-                "label" => trans('HCSeo::seo.values_url'),
+            'content' => [
+                "type"  => "text",
+                "label" => trans('HCSeo::seo_values.content'),
             ],
 
         ];
@@ -74,7 +78,7 @@ class HCSeoController extends HCBaseController
     {
         $data = $this->getInputData();
 
-        $record = HCSeo::create(array_get($data, 'record'));
+        $record = HCSeoValues::create(array_get($data, 'record'));
 
         return $this->apiShow($record->id);
     }
@@ -82,12 +86,13 @@ class HCSeoController extends HCBaseController
     /**
      * Updates existing item based on ID
      *
-     * @param $id
+     * @param string $recordId
+     * @param string $id
      * @return mixed
      */
-    protected function __apiUpdate(string $id)
+    protected function __apiUpdate(string $recordId, string $id = null)
     {
-        $record = HCSeo::findOrFail($id);
+        $record = HCSeoValues::findOrFail($id);
 
         $data = $this->getInputData();
 
@@ -104,7 +109,7 @@ class HCSeoController extends HCBaseController
      */
     protected function __apiUpdateStrict(string $id)
     {
-        HCSeo::where('id', $id)->update(request()->all());
+        HCSeoValues::where('id', $id)->update(request()->all());
 
         return $this->apiShow($id);
     }
@@ -117,7 +122,7 @@ class HCSeoController extends HCBaseController
      */
     protected function __apiDestroy(array $list)
     {
-        HCSeo::destroy($list);
+        HCSeoValues::destroy($list);
 
         return hcSuccess();
     }
@@ -130,7 +135,7 @@ class HCSeoController extends HCBaseController
      */
     protected function __apiForceDelete(array $list)
     {
-        HCSeo::onlyTrashed()->whereIn('id', $list)->forceDelete();
+        HCSeoValues::onlyTrashed()->whereIn('id', $list)->forceDelete();
 
         return hcSuccess();
     }
@@ -143,7 +148,7 @@ class HCSeoController extends HCBaseController
      */
     protected function __apiRestore(array $list)
     {
-        HCSeo::whereIn('id', $list)->restore();
+        HCSeoValues::whereIn('id', $list)->restore();
 
         return hcSuccess();
     }
@@ -158,12 +163,10 @@ class HCSeoController extends HCBaseController
     {
         $with = [];
 
-        HCSeo::$customAppends = ['values_url'];
-
         if( $select == null )
-            $select = HCSeo::getFillableFields();
+            $select = HCSeoValues::getFillableFields();
 
-        $list = HCSeo::with($with)->select($select)
+        $list = HCSeoValues::with($with)->select($select)
             // add filters
             ->where(function ($query) use ($select) {
                 $query = $this->getRequestParameters($query, $select);
@@ -190,7 +193,8 @@ class HCSeoController extends HCBaseController
     protected function searchQuery(Builder $query, string $phrase)
     {
         return $query->where(function (Builder $query) use ($phrase) {
-            $query->where('path', 'LIKE', '%' . $phrase . '%');
+            $query->where('name', 'LIKE', '%' . $phrase . '%')
+                ->orWhere('content', 'LIKE', '%' . $phrase . '%');
         });
     }
 
@@ -201,14 +205,16 @@ class HCSeoController extends HCBaseController
      */
     protected function getInputData()
     {
-        (new HCSeoValidator())->validateForm();
+        (new HCSeoValuesValidator())->validateForm();
 
         $_data = request()->all();
 
         if( array_has($_data, 'id') )
             array_set($data, 'record.id', array_get($_data, 'id'));
 
-        array_set($data, 'record.path', array_get($_data, 'path'));
+        array_set($data, 'record.record_id', request()->segment(4));
+        array_set($data, 'record.name', array_get($_data, 'name'));
+        array_set($data, 'record.content', array_get($_data, 'content'));
 
         return makeEmptyNullable($data);
     }
@@ -216,16 +222,21 @@ class HCSeoController extends HCBaseController
     /**
      * Getting single record
      *
-     * @param $id
+     * @param string $recordId
+     * @param string $id
      * @return mixed
      */
-    public function apiShow(string $id)
+    public function apiShow(string $recordId, string $id = null)
     {
         $with = [];
 
-        $select = HCSeo::getFillableFields();
+        if( is_null($id) ) {
+            $id = $recordId;
+        }
 
-        $record = HCSeo::with($with)
+        $select = HCSeoValues::getFillableFields();
+
+        $record = HCSeoValues::with($with)
             ->select($select)
             ->where('id', $id)
             ->firstOrFail();

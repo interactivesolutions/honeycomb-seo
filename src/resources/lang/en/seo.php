@@ -1,6 +1,7 @@
 <?php
-    return [
-        'page_title' => 'HCSeo',
-'path' => 'Path',
 
-    ];
+return [
+    'page_title' => 'Seo',
+    'path'       => 'Path',
+    'values_url' => 'Values url',
+];
