@@ -39,9 +39,9 @@ class HCSeoValuesController extends HCBaseController
             $config['actions'][] = 'update';
             $config['actions'][] = 'restore';
         }
-
-        if( auth()->user()->can('interactivesolutions_honeycomb_seo_routes_seo_values_delete') )
-            $config['actions'][] = 'delete';
+//
+//        if( auth()->user()->can('interactivesolutions_honeycomb_seo_routes_seo_values_delete') )
+//            $config['actions'][] = 'delete';
 
         $config['actions'][] = 'search';
         $config['filters'] = $this->getFilters();
@@ -117,7 +117,7 @@ class HCSeoValuesController extends HCBaseController
     /**
      * Delete records table
      *
-     * @param $list
+     * @param array $list
      * @return mixed
      */
     protected function __apiDestroy(array $list)
