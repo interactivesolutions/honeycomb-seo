@@ -29,19 +29,22 @@ class HCSeoForm
             ],
             'structure'  => [
                 [
-    "type"            => "singleLine",
-    "fieldID"         => "path",
-    "label"           => trans("HCSeo::seo.path"),
-    "required"        => 1,
-    "requiredVisible" => 1,
-],
+                    "tabID"           => trans('HCTranslations::core.seo'),
+                    "type"            => "singleLine",
+                    "fieldID"         => "path",
+                    "label"           => trans("HCSeo::seo.path"),
+                    "required"        => 1,
+                    "requiredVisible" => 1,
+                ],
             ],
         ];
 
-        if ($this->multiLanguage)
+        formManagerSeoFields($form);
+
+        if( $this->multiLanguage )
             $form['availableLanguages'] = getHCContentLanguages();
 
-        if (!$edit)
+        if( ! $edit )
             return $form;
 
         //Make changes to edit form if needed

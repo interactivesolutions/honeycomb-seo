@@ -53,14 +53,14 @@ class HCSeoController extends HCBaseController
     public function getAdminListHeader()
     {
         return [
-            'path' => [
+            'path'       => [
                 "type"  => "text",
                 "label" => trans('HCSeo::seo.path'),
             ],
-            'values_url' => [
-                "type"  => "external-button",
-                "label" => trans('HCSeo::seo.values_url'),
-            ],
+//            'values_url' => [
+//                "type"  => "external-button",
+//                "label" => trans('HCSeo::seo.values_url'),
+//            ],
 
         ];
     }
@@ -75,6 +75,9 @@ class HCSeoController extends HCBaseController
         $data = $this->getInputData();
 
         $record = HCSeo::create(array_get($data, 'record'));
+
+        $record->values()->forceDelete();
+        $record->values()->createMany(array_get($data, 'seo'));
 
         return $this->apiShow($record->id);
     }
@@ -92,6 +95,8 @@ class HCSeoController extends HCBaseController
         $data = $this->getInputData();
 
         $record->update(array_get($data, 'record', []));
+        $record->values()->forceDelete();
+        $record->values()->createMany(array_get($data, 'seo'));
 
         return $this->apiShow($record->id);
     }
@@ -210,6 +215,47 @@ class HCSeoController extends HCBaseController
 
         array_set($data, 'record.path', trim(array_get($_data, 'path'), '/'));
 
+
+        $seoData = [];
+
+        foreach ( request()->except('id', 'path') as $key => $content ) {
+
+            if( starts_with($key, 'seo__') ) {
+                $key = str_replace('seo__', '', $key);
+
+                $value = ['content' => $content];
+
+                if( $key == 'title' ) {
+                    array_push($seoData, ['type' => 'title', 'name' => 'title'] + $value);
+                    array_push($seoData, ['type' => 'name', 'name' => 'twitter:title'] + $value);
+                    array_push($seoData, ['type' => 'property', 'name' => 'og:title'] + $value);
+                    array_push($seoData, ['type' => 'itemprop', 'name' => 'name'] + $value);
+                } else if( $key == 'description' ) {
+                    array_push($seoData, ['type' => 'name', 'name' => 'description'] + $value);
+                    array_push($seoData, ['type' => 'name', 'name' => 'twitter:description'] + $value);
+                    array_push($seoData, ['type' => 'property', 'name' => 'og:description'] + $value);
+                    array_push($seoData, ['type' => 'itemprop', 'name' => 'description'] + $value);
+                } else if( $key == 'ogtype' ) {
+                    array_push($seoData, ['type' => 'property', 'name' => 'og:type'] + $value);
+                } else if( $key == 'ogurl' ) {
+                    array_push($seoData, ['type' => 'property', 'name' => 'og:url'] + $value);
+                } else if( $key == 'ogimage' ) {
+                    array_push($seoData, ['type' => 'property', 'name' => 'og:image'] + $value);
+                    array_push($seoData, ['type' => 'itemprop', 'name' => 'image'] + $value);
+                } else if( $key == 'ogsite_name' ) {
+                    array_push($seoData, ['type' => 'property', 'name' => 'og:site_name'] + $value);
+                } else if( $key == 'twittercard' ) {
+                    array_push($seoData, ['type' => 'name', 'name' => 'twitter:card'] + $value);
+                } else if( $key == 'twittersite' ) {
+                    array_push($seoData, ['type' => 'name', 'name' => 'twitter:site'] + $value);
+                } else if( $key == 'twittercreator' ) {
+                    array_push($seoData, ['type' => 'name', 'name' => 'twitter:creator'] + $value);
+                }
+            }
+        }
+
+        array_set($data, 'seo', $seoData);
+
         return makeEmptyNullable($data);
     }
 
@@ -221,7 +267,7 @@ class HCSeoController extends HCBaseController
      */
     public function apiShow(string $id)
     {
-        $with = [];
+        $with = ['values'];
 
         $select = HCSeo::getFillableFields();
 
@@ -229,6 +275,14 @@ class HCSeoController extends HCBaseController
             ->select($select)
             ->where('id', $id)
             ->firstOrFail();
+
+        foreach ( $record->values->pluck('content', 'name') as $key => $content ) {
+            $key = str_replace(':', '', $key);
+
+            if( in_array($key, ['title', 'description', 'ogtype', 'ogurl', 'ogimage', 'ogsite_name', 'twittersite', 'twittercard', 'twittercreator']) ) {
+                $record->{'seo__' . $key} = $content;
+            }
+        }
 
         return $record;
     }
