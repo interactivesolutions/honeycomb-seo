@@ -242,6 +242,7 @@ class HCSeoController extends HCBaseController
                 } else if( $key == 'ogimage' ) {
                     array_push($seoData, ['type' => 'property', 'name' => 'og:image'] + $value);
                     array_push($seoData, ['type' => 'itemprop', 'name' => 'image'] + $value);
+                    array_push($seoData, ['type' => 'name', 'name' => 'twitter:image'] + $value);
                 } else if( $key == 'ogsite_name' ) {
                     array_push($seoData, ['type' => 'property', 'name' => 'og:site_name'] + $value);
                 } else if( $key == 'twittercard' ) {
