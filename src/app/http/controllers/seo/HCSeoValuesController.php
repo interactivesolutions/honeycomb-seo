@@ -196,6 +196,7 @@ class HCSeoValuesController extends HCBaseController
             $select = HCSeoValues::getFillableFields();
 
         $list = HCSeoValues::with($with)->select($select)
+            ->where('record_id',  request()->segment(4))
             // add filters
             ->where(function ($query) use ($select) {
                 $query = $this->getRequestParameters($query, $select);

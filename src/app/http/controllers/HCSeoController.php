@@ -208,7 +208,7 @@ class HCSeoController extends HCBaseController
         if( array_has($_data, 'id') )
             array_set($data, 'record.id', array_get($_data, 'id'));
 
-        array_set($data, 'record.path', array_get($_data, 'path'));
+        array_set($data, 'record.path', trim(array_get($_data, 'path'), '/'));
 
         return makeEmptyNullable($data);
     }

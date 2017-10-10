@@ -44,11 +44,15 @@ if( ! function_exists('getSeoValuesByPath') ) {
     /**
      * Seo field content getting
      *
-     * @param string $path
+     * @param string|null $path
      * @return mixed
      */
-    function getSeoValuesByPath(string $path)
+    function getSeoValuesByPath(string $path = null)
     {
+        if( is_null($path) ) {
+            $path = request()->path();
+        }
+
         $key = 'seo__' . $path;
 
         if( cache()->has($key) ) {
