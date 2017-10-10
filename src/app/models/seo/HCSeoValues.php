@@ -22,6 +22,13 @@ class HCSeoValues extends HCUuidModel
     protected $fillable = ['id', 'record_id', 'type', 'name', 'content'];
 
     /**
+     * All of the relationships to be touched.
+     *
+     * @var array
+     */
+    protected $touches = ['record'];
+
+    /**
      * Relation to record
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

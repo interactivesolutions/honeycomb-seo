@@ -1,5 +1,7 @@
 <?php
 
+use interactivesolutions\honeycombseo\app\models\HCSeo;
+
 if( ! function_exists('formManagerSeoFields') ) {
 
     /**
@@ -34,5 +36,35 @@ if( ! function_exists('formManagerSeoFields') ) {
                 "tabID"   => trans('HCTranslations::core.seo'),
             ],
         ]);
+    }
+}
+
+if( ! function_exists('getSeoValuesByPath') ) {
+
+    /**
+     * Seo field content getting
+     *
+     * @param string $path
+     * @return mixed
+     */
+    function getSeoValuesByPath(string $path)
+    {
+        $key = 'seo__' . $path;
+
+        if( cache()->has($key) ) {
+            return cache()->get($key);
+        }
+
+        $value = Cache::remember($key, 10, function () use ($path) {
+            $seo = HCSeo::with('values')->where('path', $path)->first();
+
+            if( $seo && $seo->values->isNotEmpty() ) {
+                $metaTags = view('HCSeo::meta-tags', compact('seo'))->render();
+
+                return $metaTags;
+            }
+        });
+
+        return $value;
     }
 }
