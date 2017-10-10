@@ -2,6 +2,7 @@
 
 namespace interactivesolutions\honeycombseo\app\http\controllers\seo;
 
+use DB;
 use Illuminate\Database\Eloquent\Builder;
 use interactivesolutions\honeycombcore\http\controllers\HCBaseController;
 use interactivesolutions\honeycombseo\app\models\HCSeo;
@@ -85,6 +86,30 @@ class HCSeoValuesController extends HCBaseController
         $record = HCSeoValues::create(array_get($data, 'record'));
 
         return $this->apiShow($record->id);
+    }
+
+    /**
+     * Function which will update record
+     *
+     * @param string $parentId
+     * @param string $id
+     * @return mixed
+     */
+    public function apiUpdate(string $parentId, string $id = null)
+    {
+        DB::beginTransaction();
+
+        try {
+            $record = $this->__apiUpdate($parentId, $id);
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            return \HCLog::error('CORE-0003' . $e->getCode(), $e->getMessage());
+        }
+
+        DB::commit();
+
+        return $record;
     }
 
     /**

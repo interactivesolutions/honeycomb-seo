@@ -36,8 +36,12 @@ class HCSeoValuesForm
                     "requiredVisible" => 1,
                     "options"         => [
                         [
+                            'id'    => 'title',
+                            'label' => 'title (page title)',
+                        ],
+                        [
                             'id'    => 'name',
-                            'label' => 'name (title, description, twitter card)',
+                            'label' => 'name (description, twitter card)',
                         ],
                         [
                             'id'    => 'property',
