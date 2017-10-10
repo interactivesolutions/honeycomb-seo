@@ -40,9 +40,9 @@ class HCSeoValuesController extends HCBaseController
             $config['actions'][] = 'update';
             $config['actions'][] = 'restore';
         }
-//
-//        if( auth()->user()->can('interactivesolutions_honeycomb_seo_routes_seo_values_delete') )
-//            $config['actions'][] = 'delete';
+
+        if( auth()->user()->can('interactivesolutions_honeycomb_seo_routes_seo_values_delete') )
+            $config['actions'][] = 'delete';
 
         $config['actions'][] = 'search';
         $config['filters'] = $this->getFilters();
@@ -101,7 +101,7 @@ class HCSeoValuesController extends HCBaseController
 
         try {
             $record = $this->__apiUpdate($parentId, $id);
-        } catch (\Exception $e) {
+        } catch ( \Exception $e ) {
             DB::rollback();
 
             return \HCLog::error('CORE-0003' . $e->getCode(), $e->getMessage());
@@ -151,7 +151,13 @@ class HCSeoValuesController extends HCBaseController
      */
     protected function __apiDestroy(array $list)
     {
-        HCSeoValues::destroy($list);
+        $records = HCSeoValues::whereIn('record_id', $list)
+            ->whereIn('id', request('list'))
+            ->get();
+
+        foreach ( $records as $record ) {
+            $record->delete();
+        }
 
         return hcSuccess();
     }
@@ -196,7 +202,7 @@ class HCSeoValuesController extends HCBaseController
             $select = HCSeoValues::getFillableFields();
 
         $list = HCSeoValues::with($with)->select($select)
-            ->where('record_id',  request()->segment(4))
+            ->where('record_id', request()->segment(4))
             // add filters
             ->where(function ($query) use ($select) {
                 $query = $this->getRequestParameters($query, $select);
