@@ -55,6 +55,7 @@ class HCSeoValuesForm
                     "label"           => trans("HCSeo::seo_values.name"),
                     "required"        => 1,
                     "requiredVisible" => 1,
+                    "note"            => "<a href=\"https://moz.com/blog/meta-data-templates-123\" target='_blank'>https://moz.com/blog/meta-data-templates-123</a>",
                 ],
                 [
                     "type"            => "textArea",
