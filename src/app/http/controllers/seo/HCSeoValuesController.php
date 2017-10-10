@@ -57,6 +57,10 @@ class HCSeoValuesController extends HCBaseController
     public function getAdminListHeader()
     {
         return [
+            'type'    => [
+                "type"  => "text",
+                "label" => trans('HCSeo::seo_values.type'),
+            ],
             'name'    => [
                 "type"  => "text",
                 "label" => trans('HCSeo::seo_values.name'),
@@ -213,6 +217,7 @@ class HCSeoValuesController extends HCBaseController
             array_set($data, 'record.id', array_get($_data, 'id'));
 
         array_set($data, 'record.record_id', request()->segment(4));
+        array_set($data, 'record.type', array_get($_data, 'type'));
         array_set($data, 'record.name', array_get($_data, 'name'));
         array_set($data, 'record.content', array_get($_data, 'content'));
 

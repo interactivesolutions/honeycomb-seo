@@ -29,12 +29,34 @@ class HCSeoValuesForm
             ],
             'structure'  => [
                 [
+                    "type"            => "radioList",
+                    "fieldID"         => "type",
+                    "label"           => trans("HCSeo::seo_values.type"),
+                    "required"        => 1,
+                    "requiredVisible" => 1,
+                    "options"         => [
+                        [
+                            'id'    => 'name',
+                            'label' => 'name (title, description, twitter card)',
+                        ],
+                        [
+                            'id'    => 'property',
+                            'label' => 'property (Open Graph data)',
+                        ],
+                        [
+                            'id'    => 'itemprop',
+                            'label' => 'itemprop (Google+)',
+                        ],
+                    ],
+                ],
+                [
                     "type"            => "singleLine",
                     "fieldID"         => "name",
                     "label"           => trans("HCSeo::seo_values.name"),
                     "required"        => 1,
                     "requiredVisible" => 1,
-                ], [
+                ],
+                [
                     "type"            => "textArea",
                     "fieldID"         => "content",
                     "label"           => trans("HCSeo::seo_values.content"),

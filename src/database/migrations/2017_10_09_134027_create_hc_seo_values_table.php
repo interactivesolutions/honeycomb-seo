@@ -19,6 +19,7 @@ class CreateHcSeoValuesTable extends Migration
             $table->timestamps();
             $table->softDeletes();
             $table->string('record_id', 36);
+            $table->string('type');
             $table->string('name', 255);
             $table->text('content')->nullable();
 

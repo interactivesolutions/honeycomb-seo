@@ -19,7 +19,7 @@ class HCSeoValues extends HCUuidModel
      *
      * @var array
      */
-    protected $fillable = ['id', 'record_id', 'name', 'content'];
+    protected $fillable = ['id', 'record_id', 'type', 'name', 'content'];
 
     /**
      * Relation to record

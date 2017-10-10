@@ -15,6 +15,8 @@ class HCSeoValuesValidator extends HCCoreFormValidator
     {
         return [
             'name' => 'required',
+            'type' => 'required',
+            'content' => 'required',
         ];
     }
 }
